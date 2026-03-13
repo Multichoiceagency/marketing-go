@@ -1,0 +1,219 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String            @id @default(cuid())
+  email         String            @unique
+  name          String?
+  image         String?
+  role          Role              @default(AGENCY)
+  emailVerified DateTime?
+  accounts      Account[]
+  sessions      Session[]
+  workspaces    WorkspaceMember[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  SUPER_ADMIN
+  AGENCY
+  CLIENT
+}
+
+model Workspace {
+  id        String            @id @default(cuid())
+  name      String
+  slug      String            @unique
+  logo      String?
+  website   String?
+  industry  String?
+  members   WorkspaceMember[]
+  brands    Brand[]
+  campaigns Campaign[]
+  ideas     Idea[]
+  posts     Post[]
+  analytics Analytics[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model WorkspaceMember {
+  id          String     @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        MemberRole @default(VIEWER)
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt    DateTime   @default(now())
+
+  @@unique([workspaceId, userId])
+}
+
+enum MemberRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+model Brand {
+  id             String     @id @default(cuid())
+  workspaceId    String
+  name           String
+  primaryColor   String?
+  secondaryColor String?
+  fontFamily     String?
+  toneOfVoice    String?    @db.Text
+  forbiddenWords String[]   @default([])
+  ctaStyle       String?
+  logoUrl        String?
+  guidelines     String?    @db.Text
+  websiteUrl     String?
+  scraped        Boolean    @default(false)
+  workspace      Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaigns      Campaign[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Campaign {
+  id          String         @id @default(cuid())
+  workspaceId String
+  brandId     String
+  name        String
+  goal        String?
+  status      CampaignStatus @default(DRAFT)
+  startDate   DateTime?
+  endDate     DateTime?
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  brand       Brand          @relation(fields: [brandId], references: [id])
+  posts       Post[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  workspaceId String
+  campaignId  String?
+  platform    Platform
+  content     String     @db.Text
+  mediaUrls   String[]   @default([])
+  status      PostStatus @default(DRAFT)
+  scheduledAt DateTime?
+  publishedAt DateTime?
+  postizId    String?
+  metrics     Json?
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaign    Campaign?  @relation(fields: [campaignId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum Platform {
+  INSTAGRAM
+  FACEBOOK
+  TWITTER
+  LINKEDIN
+  TIKTOK
+}
+
+enum PostStatus {
+  DRAFT
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+model Idea {
+  id          String     @id @default(cuid())
+  workspaceId String
+  title       String
+  description String?    @db.Text
+  source      IdeaSource @default(CLIENT)
+  status      IdeaStatus @default(NEW)
+  priority    Int        @default(0)
+  brief       Json?
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum IdeaSource {
+  CLIENT
+  AGENCY
+  AI
+}
+
+enum IdeaStatus {
+  NEW
+  IN_REVIEW
+  APPROVED
+  IN_PRODUCTION
+  DONE
+  REJECTED
+}
+
+model Analytics {
+  id          String   @id @default(cuid())
+  workspaceId String
+  date        DateTime @db.Date
+  platform    Platform
+  reach       Int      @default(0)
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  leads       Int      @default(0)
+  followers   Int      @default(0)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, date, platform])
+}
