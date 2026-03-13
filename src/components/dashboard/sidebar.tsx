@@ -66,6 +66,7 @@ export function Sidebar({ user }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 isActive
@@ -73,9 +74,9 @@ export function Sidebar({ user }: SidebarProps) {
                   : "text-muted-foreground hover:text-foreground hover:bg-accent"
               )}
             >
-              <Icon className="w-4 h-4 shrink-0" />
+              <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
               {item.label}
-              {isActive && <ChevronRight className="w-3 h-3 ml-auto" />}
+              {isActive && <ChevronRight className="w-3 h-3 ml-auto" aria-hidden="true" />}
             </Link>
           )
         })}
@@ -96,8 +97,9 @@ export function Sidebar({ user }: SidebarProps) {
             size="icon"
             className="h-8 w-8 shrink-0"
             onClick={() => signOut({ callbackUrl: "/login" })}
+            aria-label="Sign out"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4" aria-hidden="true" />
           </Button>
         </div>
       </div>

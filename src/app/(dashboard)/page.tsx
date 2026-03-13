@@ -149,7 +149,7 @@ export default async function DashboardPage() {
                     <p className="text-xs text-muted-foreground mt-1">{metric.description}</p>
                   </div>
                   <div className={`p-2.5 rounded-xl ${metric.bg}`}>
-                    <Icon className={`w-5 h-5 ${metric.color}`} />
+                    <Icon className={`w-5 h-5 ${metric.color}`} aria-hidden="true" />
                   </div>
                 </div>
               </CardContent>
@@ -163,11 +163,12 @@ export default async function DashboardPage() {
           <Card className="border-border/50">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <div>
-                <CardTitle className="text-base font-semibold">Recent Posts</CardTitle>
+                <CardTitle className="text-base font-semibold" as="h2">Recent Posts</CardTitle>
                 <CardDescription>Latest content across all workspaces</CardDescription>
               </div>
               <Link href="/calendar" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-xs")}>
-                View all <ArrowRight className="w-3 h-3 ml-1" />
+                View all <ArrowRight className="w-3 h-3 ml-1" aria-hidden="true" />
+                <span className="sr-only">recent posts</span>
               </Link>
             </CardHeader>
             <CardContent className="p-0">
@@ -177,7 +178,7 @@ export default async function DashboardPage() {
                   <p className="text-xs text-muted-foreground mt-1">Create your first post to get started</p>
                 </div>
               ) : (
-                <Table>
+                <Table aria-label="Recent posts">
                   <TableHeader>
                     <TableRow className="border-border/50">
                       <TableHead className="pl-6">Content</TableHead>
@@ -223,28 +224,31 @@ export default async function DashboardPage() {
         <div>
           <Card className="border-border/50 h-full">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Quick Actions</CardTitle>
+              <CardTitle className="text-base font-semibold" as="h2">Quick Actions</CardTitle>
               <CardDescription>Shortcuts to common tasks</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2">
-              {[
-                { label: "Create Workspace", href: "/workspaces", icon: Plus },
-                { label: "Schedule Post", href: "/calendar", icon: Megaphone },
-                { label: "Submit Idea", href: "/ideas", icon: Lightbulb },
-                { label: "View Analytics", href: "/analytics", icon: TrendingUp },
-              ].map((action) => {
-                const Icon = action.icon
-                return (
-                  <Link
-                    key={action.href}
-                    href={action.href}
-                    className={cn(buttonVariants({ variant: "outline" }), "w-full justify-start h-10")}
-                  >
-                    <Icon className="w-4 h-4 mr-3 text-muted-foreground" />
-                    {action.label}
-                  </Link>
-                )
-              })}
+            <CardContent>
+              <ul className="space-y-2">
+                {[
+                  { label: "Create Workspace", href: "/workspaces", icon: Plus },
+                  { label: "Schedule Post", href: "/calendar", icon: Megaphone },
+                  { label: "Submit Idea", href: "/ideas", icon: Lightbulb },
+                  { label: "View Analytics", href: "/analytics", icon: TrendingUp },
+                ].map((action) => {
+                  const Icon = action.icon
+                  return (
+                    <li key={action.href}>
+                      <Link
+                        href={action.href}
+                        className={cn(buttonVariants({ variant: "outline" }), "w-full justify-start h-10")}
+                      >
+                        <Icon className="w-4 h-4 mr-3 text-muted-foreground" aria-hidden="true" />
+                        {action.label}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
             </CardContent>
           </Card>
         </div>
