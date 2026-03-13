@@ -18,7 +18,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     session({ session, token }) {
-      console.log("Session Callback - Token:", JSON.stringify(token, null, 2))
       if (session.user) {
         session.user.role = token.role as Role
         session.user.id = token.id as string

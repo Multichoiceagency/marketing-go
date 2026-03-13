@@ -74,13 +74,10 @@ async function getDashboardData(userId: string) {
 
 export default async function DashboardPage() {
   const session = await auth()
-  console.log("Dashboard Session:", JSON.stringify(session, null, 2))
   if (!session?.user) return null
 
   const userId = session.user.id
-  console.log("Dashboard UserId:", userId)
   const data = await getDashboardData(userId)
-  console.log("Dashboard Data:", JSON.stringify(data, null, 2))
 
   const metrics = [
     {
