@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session({ session, token }) {
       if (session.user) {
-        (session.user as any).role = token.role
+        ;(session.user as any).role = token.role
         ;(session.user as any).id = token.id
       }
       return session
@@ -27,20 +27,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        code: { label: "Verification Code", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+        if (!credentials?.email || !credentials?.code) return null
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+        const email = credentials.email as string
+        const code = credentials.code as string
+
+        // Verify OTP code
+        const identifier = `otp:${email}`
+        const token = await prisma.verificationToken.findFirst({
+          where: { identifier, token: code, expires: { gte: new Date() } },
         })
 
+        if (!token) return null
+
+        // Clean up used token
+        await prisma.verificationToken.deleteMany({ where: { identifier } })
+
+        // Find user
+        const user = await prisma.user.findUnique({ where: { email } })
         if (!user) return null
 
-        // In production, compare hashed passwords
-        // const valid = await compare(credentials.password as string, user.passwordHash)
-        // if (!valid) return null
+        // Mark email as verified on first login
+        if (!user.emailVerified) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: new Date() },
+          })
+        }
 
         return user
       },
