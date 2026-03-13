@@ -125,9 +125,6 @@ export function BrandEditor({ workspaceId, brand }: BrandEditorProps) {
 
   const onSubmit = async (data: FormData) => {
     const method = brand ? "PATCH" : "POST"
-    const url = brand
-      ? `/api/workspaces/${workspaceId}`
-      : "/api/workspaces"
 
     const payload = { ...data, forbiddenWords, workspaceId, brandId: brand?.id }
 

@@ -26,7 +26,7 @@ export async function GET(
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
 
   const workspace = await prisma.workspace.findFirst({
     where: { id, members: { some: { userId } } },
@@ -50,7 +50,7 @@ export async function PATCH(
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const member = await checkAccess(id, userId)
 
   if (!member || member.role === "VIEWER") {
@@ -85,7 +85,7 @@ export async function DELETE(
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const member = await checkAccess(id, userId)
 
   if (!member || member.role !== "OWNER") {

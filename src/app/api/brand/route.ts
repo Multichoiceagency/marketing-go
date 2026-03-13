@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const body = await req.json()
   const parsed = createSchema.safeParse(body)
 

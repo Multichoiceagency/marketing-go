@@ -2,14 +2,13 @@ import { auth } from "@/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
 
 export default async function SettingsPage() {
   const session = await auth()
   if (!session?.user) return null
 
   const user = session.user
-  const role = (user as any).role as string
+  const role = user.role
 
   const initials = user.name
     ? user.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)

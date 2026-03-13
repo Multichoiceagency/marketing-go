@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChevronRight, Clock, Lightbulb, CheckCircle2, XCircle, Zap } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Clock, Lightbulb, CheckCircle2, XCircle, Zap } from "lucide-react"
 import { format } from "date-fns"
 
 type IdeaStatus = "NEW" | "IN_REVIEW" | "APPROVED" | "IN_PRODUCTION" | "DONE" | "REJECTED"
@@ -38,7 +37,7 @@ const sourceColors: Record<IdeaSource, string> = {
   AI: "bg-emerald-100 text-emerald-700",
 }
 
-export function IdeasKanban({ ideas, workspaceId }: IdeasKanbanProps) {
+export function IdeasKanban({ ideas }: IdeasKanbanProps) {
   const [localIdeas, setLocalIdeas] = useState(ideas)
 
   const moveIdea = async (ideaId: string, newStatus: IdeaStatus) => {

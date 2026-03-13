@@ -33,8 +33,8 @@ function LoginForm() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? "Failed to send code")
       setStep("code")
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
       setLoading(false)
     }
@@ -56,8 +56,8 @@ function LoginForm() {
       }
       router.push(callbackUrl)
       router.refresh()
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
       setLoading(false)
     }

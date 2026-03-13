@@ -25,7 +25,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
 
   const workspaces = await prisma.workspace.findMany({
     where: { members: { some: { userId } } },
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
 
   const body = await req.json()
   const parsed = createSchema.safeParse(body)

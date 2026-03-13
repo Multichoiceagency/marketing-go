@@ -2,13 +2,6 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { IdeasKanban } from "@/components/dashboard/ideas-kanban"
 import { CreateIdeaDialog } from "@/components/dashboard/create-idea-dialog"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 async function getAllIdeas(userId: string) {
   const [ideas, workspaces] = await Promise.all([
@@ -28,7 +21,7 @@ export default async function IdeasPage() {
   const session = await auth()
   if (!session?.user) return null
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const { ideas, workspaces } = await getAllIdeas(userId)
 
   const firstWorkspace = workspaces[0]

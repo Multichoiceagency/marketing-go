@@ -46,7 +46,6 @@ export function CreateIdeaDialog({ workspaceId }: CreateIdeaDialogProps) {
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),

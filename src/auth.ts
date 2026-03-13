@@ -2,23 +2,25 @@ import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import Credentials from "next-auth/providers/credentials"
+import { Role } from "@prisma/client"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  adapter: PrismaAdapter(prisma) as any,
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role
+        token.role = user.role
         token.id = user.id
       }
       return token
     },
     session({ session, token }) {
       if (session.user) {
-        ;(session.user as any).role = token.role
-        ;(session.user as any).id = token.id
+        session.user.role = token.role as Role
+        session.user.id = token.id as string
       }
       return session
     },

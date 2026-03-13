@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const { searchParams } = new URL(req.url)
 
   const parsed = querySchema.safeParse(Object.fromEntries(searchParams))

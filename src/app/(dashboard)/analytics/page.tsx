@@ -2,7 +2,6 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { subDays, format } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { AnalyticsChart } from "@/components/dashboard/analytics-chart"
 import { AnalyticsFilters } from "@/components/dashboard/analytics-filters"
 import { TrendingUp, Eye, MousePointerClick, Users } from "lucide-react"
@@ -30,7 +29,7 @@ export default async function AnalyticsPage({
   if (!session?.user) return null
 
   const { days: daysParam, platform: platformParam } = await searchParams
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const days = parseInt(daysParam ?? "30")
 
   let analytics = await getAnalytics(userId, days)

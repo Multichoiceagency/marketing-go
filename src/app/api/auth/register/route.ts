@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { sendWelcomeEmail } from "@/lib/email"
 import { z } from "zod"
-import bcrypt from "bcryptjs"
 
 const schema = z.object({
   email: z.string().email(),

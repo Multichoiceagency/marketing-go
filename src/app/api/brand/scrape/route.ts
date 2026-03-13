@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     })
     clearTimeout(timeout)
     html = await res.text()
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch website. Please check the URL." },
       { status: 422 }

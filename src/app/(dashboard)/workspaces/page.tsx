@@ -4,7 +4,6 @@ import Link from "next/link"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Plus, Building2, Users, ArrowRight, Globe } from "lucide-react"
 import { CreateWorkspaceDialog } from "@/components/dashboard/create-workspace-dialog"
 
@@ -23,7 +22,7 @@ export default async function WorkspacesPage() {
   const session = await auth()
   if (!session?.user) return null
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const workspaces = await getWorkspaces(userId)
 
   return (

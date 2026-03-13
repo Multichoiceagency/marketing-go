@@ -2,11 +2,10 @@
 
 import { Suspense, useState } from "react"
 import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, Loader2, Mail, ArrowLeft, Building2 } from "lucide-react"
+import { Loader2, Mail, ArrowLeft, Building2 } from "lucide-react"
 import Link from "next/link"
 
 function RegisterForm() {
@@ -30,8 +29,8 @@ function RegisterForm() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? "Failed to send code")
       setStep("code")
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
       setLoading(false)
     }
@@ -59,8 +58,8 @@ function RegisterForm() {
 
       // Sign in with the same code (already consumed, need new one)
       router.push(`/login?registered=1`)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
       setLoading(false)
     }

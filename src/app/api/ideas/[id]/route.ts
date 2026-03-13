@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
+import { Prisma } from "@prisma/client"
 
 const updateSchema = z.object({
   status: z.enum(["NEW", "IN_REVIEW", "APPROVED", "IN_PRODUCTION", "DONE", "REJECTED"]).optional(),
@@ -20,7 +21,7 @@ export async function PATCH(
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
 
   const idea = await prisma.idea.findUnique({
     where: { id },
@@ -43,7 +44,7 @@ export async function PATCH(
     where: { id },
     data: {
       ...rest,
-      ...(brief !== undefined ? { brief: brief as any } : {}),
+      ...(brief !== undefined ? { brief: brief as Prisma.InputJsonValue } : {}),
     },
   })
 
@@ -58,7 +59,7 @@ export async function DELETE(
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
 
   const idea = await prisma.idea.findUnique({
     where: { id },

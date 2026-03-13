@@ -22,8 +22,6 @@ const ALLOWED_TYPES = [
   "application/pdf",
 ]
 
-const MAX_SIZE_BYTES = 100 * 1024 * 1024 // 100MB
-
 export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

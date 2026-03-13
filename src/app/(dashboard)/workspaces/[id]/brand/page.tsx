@@ -24,7 +24,7 @@ export default async function BrandPage({
   const session = await auth()
   if (!session?.user) return null
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const workspace = await getWorkspaceBrand(id, userId)
 
   if (!workspace) notFound()

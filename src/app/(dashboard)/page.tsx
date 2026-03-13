@@ -1,8 +1,7 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
   Table,
@@ -77,7 +76,7 @@ export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user) return null
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const data = await getDashboardData(userId)
 
   const metrics = [

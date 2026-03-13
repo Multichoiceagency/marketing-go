@@ -19,7 +19,7 @@ export default async function BrandCenterPage() {
   const session = await auth()
   if (!session?.user) return null
 
-  const userId = (session.user as any).id as string
+  const userId = session.user.id
   const brands = await getAllBrands(userId)
 
   return (
