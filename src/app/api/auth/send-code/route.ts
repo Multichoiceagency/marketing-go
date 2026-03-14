@@ -13,31 +13,32 @@ function generateCode() {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid email" }, { status: 400 })
-  }
-
-  const { email } = parsed.data
-  const code = generateCode()
-  const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
-
-  // Store code as verification token
-  const identifier = `otp:${email}`
-  await prisma.verificationToken.deleteMany({ where: { identifier } })
-  await prisma.verificationToken.create({
-    data: { identifier, token: code, expires },
-  })
-
-  const user = await prisma.user.findUnique({ where: { email } })
-
   try {
-    await sendVerificationCode(email, code, user?.companyName ?? undefined)
-  } catch (err) {
-    console.error("Failed to send email:", err)
-    return NextResponse.json({ error: "Failed to send verification code" }, { status: 500 })
-  }
+    const body = await req.json()
+    const parsed = schema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid email" }, { status: 400 })
+    }
 
-  return NextResponse.json({ sent: true, isNewUser: !user })
+    const { email } = parsed.data
+    const code = generateCode()
+    const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+
+    // Store code as verification token
+    const identifier = `otp:${email}`
+    await prisma.verificationToken.deleteMany({ where: { identifier } })
+    await prisma.verificationToken.create({
+      data: { identifier, token: code, expires },
+    })
+
+    const user = await prisma.user.findUnique({ where: { email } })
+
+    await sendVerificationCode(email, code, user?.companyName ?? undefined)
+
+    return NextResponse.json({ sent: true, isNewUser: !user })
+  } catch (err) {
+    console.error("send-code error:", err)
+    const message = err instanceof Error ? err.message : "Internal server error"
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 }
