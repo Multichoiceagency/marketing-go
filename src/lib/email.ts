@@ -12,7 +12,8 @@ const transporter = nodemailer.createTransport({
 
 export async function sendVerificationCode(to: string, code: string, companyName?: string) {
   const fromName = "Marketing Go"
-  const from = `${fromName} <${process.env.SMTP_EMAIL}>`
+  const fromEmail = process.env.SMTP_FROM ?? process.env.SMTP_EMAIL
+  const from = `${fromName} <${fromEmail}>`
 
   await transporter.sendMail({
     from,
@@ -35,7 +36,9 @@ export async function sendVerificationCode(to: string, code: string, companyName
 }
 
 export async function sendWelcomeEmail(to: string, name: string, loginUrl: string) {
-  const from = `Marketing Go <${process.env.SMTP_EMAIL}>`
+  const fromEmail = process.env.SMTP_FROM ?? process.env.SMTP_EMAIL
+  const from = `Marketing Go <${fromEmail}>`
+  
   await transporter.sendMail({
     from,
     to,
