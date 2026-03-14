@@ -33,7 +33,36 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({ where: { email } })
 
-    await sendVerificationCode(email, code, user?.companyName ?? undefined)
+    // Try to send email, but allow fallback if SMTP is not configured
+    let emailSent = false
+    let emailError: string | null = null
+    try {
+      await sendVerificationCode(email, code, user?.companyName ?? undefined)
+      emailSent = true
+    } catch (smtpErr) {
+      console.error("SMTP error:", smtpErr)
+      emailError = smtpErr instanceof Error ? smtpErr.message : "Email sending failed"
+    }
+
+    // If email failed and SMTP is not properly configured, return code directly (dev mode)
+    const smtpConfigured = process.env.SMTP_EMAIL && 
+      !process.env.SMTP_EMAIL.includes("placeholder") &&
+      process.env.SMTP_PASSWORD && 
+      !process.env.SMTP_PASSWORD.includes("placeholder")
+
+    if (!emailSent && !smtpConfigured) {
+      console.log(`[DEV] Verification code for ${email}: ${code}`)
+      return NextResponse.json({ 
+        sent: true, 
+        isNewUser: !user,
+        devMode: true,
+        code // Return code when SMTP not configured
+      })
+    }
+
+    if (!emailSent) {
+      return NextResponse.json({ error: emailError || "Failed to send verification email" }, { status: 500 })
+    }
 
     return NextResponse.json({ sent: true, isNewUser: !user })
   } catch (err) {

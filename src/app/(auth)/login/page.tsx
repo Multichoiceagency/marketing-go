@@ -19,6 +19,7 @@ function LoginForm() {
   const [step, setStep] = useState<"email" | "code">("email")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [devMode, setDevMode] = useState(false)
 
   const sendCode = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,6 +33,13 @@ function LoginForm() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? "Failed to send code")
+      
+      // Handle dev mode - auto-fill code when returned
+      if (data.devMode && data.code) {
+        setCode(data.code)
+        setDevMode(true)
+      }
+      
       setStep("code")
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
@@ -66,9 +74,13 @@ function LoginForm() {
   if (step === "code") {
     return (
       <div className="space-y-4">
-        <div className="rounded-md bg-blue-50 border border-blue-200 px-3 py-2 dark:bg-blue-950 dark:border-blue-800">
-          <p className="text-sm text-blue-700 dark:text-blue-300">
-            We sent a 6-digit code to <strong>{email}</strong>
+        <div className={`rounded-md px-3 py-2 ${devMode ? 'bg-amber-50 border border-amber-200 dark:bg-amber-950 dark:border-amber-800' : 'bg-blue-50 border border-blue-200 dark:bg-blue-950 dark:border-blue-800'}`}>
+          <p className={`text-sm ${devMode ? 'text-amber-700 dark:text-amber-300' : 'text-blue-700 dark:text-blue-300'}`}>
+            {devMode ? (
+              <>⚠️ Dev mode: SMTP not configured. Code pre-filled below.</>
+            ) : (
+              <>We sent a 6-digit code to <strong>{email}</strong></>
+            )}
           </p>
         </div>
         <form onSubmit={verifyCode} className="space-y-4">
@@ -96,7 +108,7 @@ function LoginForm() {
           </Button>
         </form>
         <button
-          onClick={() => { setStep("email"); setCode(""); setError(null) }}
+          onClick={() => { setStep("email"); setCode(""); setError(null); setDevMode(false) }}
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-3 w-3" /> Use different email
