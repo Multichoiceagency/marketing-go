@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import { BrandEditor } from "@/components/dashboard/brand-editor"
 import { ArrowLeft } from "lucide-react"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
